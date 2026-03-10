@@ -23,6 +23,8 @@ class AudioRecorder:
         
         # We need paInt16 mapped
         self.format = pyaudio.paInt16
+        self.actual_rate = config.RATE
+        self.actual_channels = config.CHANNELS
 
     def start(self):
         if self.is_recording:
@@ -37,17 +39,36 @@ class AudioRecorder:
             print(f"   Canaux max: {default_device_info['maxInputChannels']}, Fréquence par défaut: {default_device_info['defaultSampleRate']}Hz")
         except Exception as e:
             print(f"⚠️ Impossible d'obtenir les infos du périphérique d'entrée par défaut: {e}")
+            default_device_info = None
 
         try:
+            self.actual_rate = config.RATE
+            self.actual_channels = config.CHANNELS
             self.stream = self.p.open(format=self.format,
-                                      channels=config.CHANNELS,
-                                      rate=config.RATE,
+                                      channels=self.actual_channels,
+                                      rate=self.actual_rate,
                                       input=True,
                                       frames_per_buffer=config.CHUNK)
         except Exception as e:
-            print(f"❌ Erreur critique: Impossible d'ouvrir le flux audio ! Vérifiez le microphone. Détails: {e}")
-            self.is_recording = False
-            return
+            print(f"⚠️ Erreur avec le taux {config.RATE}Hz ({e}). Tentative avec le taux par défaut du périphérique...")
+            if default_device_info:
+                try:
+                    self.actual_rate = int(default_device_info['defaultSampleRate'])
+                    self.actual_channels = int(default_device_info.get('maxInputChannels', 1)) or 1
+                    self.stream = self.p.open(format=self.format,
+                                              channels=self.actual_channels,
+                                              rate=self.actual_rate,
+                                              input=True,
+                                              frames_per_buffer=config.CHUNK)
+                    print(f"✅ Succès avec {self.actual_rate}Hz et {self.actual_channels} canaux.")
+                except Exception as e2:
+                    print(f"❌ Erreur critique au fallback: Impossible d'ouvrir le flux audio ! {e2}")
+                    self.is_recording = False
+                    return
+            else:
+                print(f"❌ Erreur critique: Pas d'infos pour le fallback. {e}")
+                self.is_recording = False
+                return
                                   
         self.record_thread = threading.Thread(target=self._record_loop)
         self.record_thread.start()
@@ -55,7 +76,7 @@ class AudioRecorder:
 
     def _record_loop(self):
         chunks_read = 0
-        chunks_per_sec = max(1, int(config.RATE / config.CHUNK))
+        chunks_per_sec = max(1, int(self.actual_rate / config.CHUNK))
         
         while self.is_recording:
             try:
@@ -96,9 +117,9 @@ class AudioRecorder:
         # Save to WAV
         output_path.parent.mkdir(parents=True, exist_ok=True)
         wf = wave.open(str(output_path), 'wb')
-        wf.setnchannels(config.CHANNELS)
+        wf.setnchannels(self.actual_channels)
         wf.setsampwidth(self.p.get_sample_size(self.format))
-        wf.setframerate(config.RATE)
+        wf.setframerate(self.actual_rate)
         wf.writeframes(b''.join(self.frames))
         wf.close()
         
