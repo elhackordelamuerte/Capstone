@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetch('/api/recording/stop', { method: 'POST' });
             stopRecordingUI();
         } catch (err) {
-            showToast('Erreur d\\'arrêt.', 'error');
+            showToast("Erreur d'arrêt.", 'error');
         }
     });
 
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalEl.show();
 
         } catch (err) {
-            showToast('Erreur lors du chargement de l\\'aperçu.', 'error');
+            showToast("Erreur lors du chargement de l'aperçu.", 'error');
         }
     };
 });
