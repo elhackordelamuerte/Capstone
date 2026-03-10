@@ -145,12 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const progressEl = document.getElementById('pipelineProgressText');
             const barEl = document.getElementById('pipelineProgressBar');
 
-            if (data.status === 'saving') {
-                updatePipelineStep('saving', 5, 'Sauvegarde Audio...');
-            } else if (data.status === 'transcribing') {
-                updatePipelineStep('transcribing', data.progress || 10, 'Transcription en cours...');
-            } else if (data.status === 'summarizing') {
-                updatePipelineStep('summarizing', data.progress || 60, 'Génération du résumé...');
+            if (data.status === 'saving' || data.status === 'processing') {
+                updatePipelineStep('processing', 50, 'Traitement en cours... Merci de patienter.');
             } else if (data.status === 'done') {
                 updatePipelineStep('done', 100, 'Terminé !');
                 setTimeout(() => {
@@ -174,8 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const res = await fetch('/api/recording/status');
                     const data = await res.json();
 
-                    if (data.status === 'processing' || data.status === 'transcribing' || data.status === 'summarizing') {
-                        updatePipelineStep(data.status, data.progress || 50, data.status + '...');
+                    if (data.status === 'saving' || data.status === 'processing') {
+                        updatePipelineStep(data.status, 50, 'Traitement en cours... Merci de patienter.');
                     } else if (data.status === 'done') {
                         updatePipelineStep('done', 100, 'Terminé !');
                         setTimeout(() => {
@@ -198,19 +194,14 @@ document.addEventListener('DOMContentLoaded', () => {
         statusEl.textContent = text;
         progressEl.textContent = progress + '%';
         barEl.style.width = progress + '%';
-
-        // Update icons
-        const steps = ['saving', 'transcribing', 'summarizing'];
-        let currentIndex = steps.indexOf(step);
-        if (step === 'done') currentIndex = 3;
-
-        steps.forEach((s, idx) => {
-            const el = document.getElementById('step-' + s);
-            if (!el) return;
-            el.classList.remove('active', 'done');
-            if (idx < currentIndex) el.classList.add('done');
-            else if (idx === currentIndex) el.classList.add('active');
-        });
+        if (progress === 100) {
+            barEl.classList.remove('progress-bar-animated', 'progress-bar-striped');
+            barEl.classList.add('bg-success');
+        } else {
+            barEl.classList.add('progress-bar-animated', 'progress-bar-striped');
+            barEl.classList.remove('bg-success', 'bg-danger');
+            barEl.classList.add('bg-primary');
+        }
     }
 
     const progressBarDanger = (bar, status, text) => {
@@ -248,8 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h6 class="card-subtitle mb-3 text-muted small"><i class="bi bi-calendar3 me-1"></i> ${date}</h6>
                             
                             <div class="d-flex flex-wrap gap-2 mb-4">
-                                ${m.has_audio ? `<a href="/api/meetings/${m.id}/download/wav" class="badge rounded-pill bg-primary bg-opacity-25 text-primary text-decoration-none border border-primary border-opacity-25"><i class="bi bi-file-music me-1"></i> Audio (.wav)</a>` : ''}
-                                ${m.has_txt ? `<a href="/api/meetings/${m.id}/download/txt" class="badge rounded-pill bg-light bg-opacity-10 text-light text-decoration-none border border-light border-opacity-25"><i class="bi bi-justify-left me-1"></i> Transcrit</a>` : ''}
                                 ${m.has_md ? `<a href="/api/meetings/${m.id}/download/md" class="badge rounded-pill bg-success bg-opacity-25 text-success text-decoration-none border border-success border-opacity-25"><i class="bi bi-markdown me-1"></i> Compte-rendu</a>` : ''}
                             </div>
                             

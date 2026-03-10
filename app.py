@@ -94,14 +94,10 @@ def list_meetings():
     meetings = []
     for d in config.MEETINGS_DIR.iterdir():
         if d.is_dir():
-            has_audio = (d / "audio.wav").exists()
-            has_txt = (d / "transcription.txt").exists()
             has_md = (d / "compte_rendu.md").exists()
             
             meetings.append({
                 "id": d.name,
-                "has_audio": has_audio,
-                "has_txt": has_txt,
                 "has_md": has_md
             })
     # Sort meetings by name reverse so newest are at top probably
@@ -112,11 +108,7 @@ def list_meetings():
 def download_file(meeting_id, file_type):
     folder = config.MEETINGS_DIR / meeting_id
     filename = ""
-    if file_type == "wav":
-        filename = "audio.wav"
-    elif file_type == "txt":
-        filename = "transcription.txt"
-    elif file_type == "md":
+    if file_type == "md":
         filename = "compte_rendu.md"
     else:
         return "Invalid file type", 400
