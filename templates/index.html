@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" data-bs-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
     <div class="background-mesh"></div>
 
@@ -28,10 +30,12 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto nav-tabs" id="appTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="record-tab" data-bs-toggle="tab" data-bs-target="#record-pane" type="button" role="tab">Enregistrer</button>
+                        <button class="nav-link active" id="record-tab" data-bs-toggle="tab"
+                            data-bs-target="#record-pane" type="button" role="tab">Enregistrer</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="library-tab" data-bs-toggle="tab" data-bs-target="#library-pane" type="button" role="tab">Bibliothèque</button>
+                        <button class="nav-link" id="library-tab" data-bs-toggle="tab" data-bs-target="#library-pane"
+                            type="button" role="tab">Bibliothèque</button>
                     </li>
                 </ul>
             </div>
@@ -40,25 +44,28 @@
 
     <div class="container main-container">
         <div class="tab-content" id="appTabsContent">
-            
+
             <!-- Tab: Enregistrer -->
             <div class="tab-pane fade show active" id="record-pane" role="tabpanel">
                 <div class="row justify-content-center">
                     <div class="col-md-8 col-lg-6">
-                        
+
                         <!-- Configuration Card -->
                         <div class="card glass-card mb-4" id="configCard">
                             <div class="card-body p-4">
-                                <h4 class="card-title fw-semibold mb-4"><i class="bi bi-gear me-2"></i>Nouvelle Réunion</h4>
+                                <h4 class="card-title fw-semibold mb-4"><i class="bi bi-gear me-2"></i>Nouvelle Réunion
+                                </h4>
                                 <form id="createMeetingForm">
                                     <div class="mb-3">
                                         <label class="form-label form-label-sm text-muted">Nom de la réunion</label>
-                                        <input type="text" class="form-control form-control-lg glass-input" id="meetingName" placeholder="Ex: Point Hebdo" required>
+                                        <input type="text" class="form-control form-control-lg glass-input"
+                                            id="meetingName" placeholder="Ex: Point Hebdo" required>
                                     </div>
                                     <div class="row mb-4">
                                         <div class="col-md-6 mb-3 mb-md-0">
                                             <label class="form-label form-label-sm text-muted">Date</label>
-                                            <input type="date" class="form-control glass-input" id="meetingDate" required>
+                                            <input type="date" class="form-control glass-input" id="meetingDate"
+                                                required>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label form-label-sm text-muted">Langue</label>
@@ -71,7 +78,8 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill fw-medium transition-all">
+                                    <button type="button" id="btnCreateMeeting"
+                                        class="btn btn-primary w-100 btn-lg rounded-pill fw-medium transition-all">
                                         Créer et préparer
                                     </button>
                                 </form>
@@ -83,17 +91,18 @@
                             <div class="card-body p-5 text-center">
                                 <h4 class="fw-semibold mb-2" id="activeMeetingName">Réunion</h4>
                                 <p class="text-muted small mb-5" id="activeMeetingId"></p>
-                                
+
                                 <div class="mic-container mb-4 mx-auto">
                                     <div class="pulse-ring d-none" id="micPulse"></div>
                                     <button class="btn btn-mic mic-idle transition-all" id="btnMic">
                                         <i class="bi bi-mic-fill fs-1"></i>
                                     </button>
                                 </div>
-                                
+
                                 <h2 class="display-4 fw-light font-monospace mb-4" id="recordTimer">00:00:00</h2>
-                                
-                                <button class="btn btn-danger rounded-pill px-4 py-2 d-none transition-all fw-medium" id="btnStopRecord">
+
+                                <button class="btn btn-danger rounded-pill px-4 py-2 d-none transition-all fw-medium"
+                                    id="btnStopRecord">
                                     <i class="bi bi-square-fill me-2 fs-6"></i> Arrêter l'enregistrement
                                 </button>
                             </div>
@@ -103,15 +112,16 @@
                         <div class="card glass-card d-none scale-in" id="pipelineCard">
                             <div class="card-body p-4">
                                 <h5 class="fw-semibold mb-4 text-center">Traitement en cours...</h5>
-                                
+
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="small text-muted" id="pipelineStatusText">Initialisation</span>
                                     <span class="small fw-bold text-primary" id="pipelineProgressText">0%</span>
                                 </div>
                                 <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="pipelineProgressBar" role="progressbar" style="width: 0%"></div>
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                                        id="pipelineProgressBar" role="progressbar" style="width: 0%"></div>
                                 </div>
-                                
+
                                 <div class="mt-4 row text-center g-2 text-muted small" id="pipelineSteps">
                                     <div class="col-4 step-item" id="step-saving">
                                         <i class="bi bi-save fs-4 mb-1 d-block"></i>Sauvegarde
@@ -142,23 +152,25 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="row g-4" id="meetingsGrid">
                     <!-- Meetings will be injected here via JS -->
                 </div>
             </div>
-            
+
         </div>
     </div>
 
     <!-- Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="appToast" class="toast glass-toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="appToast" class="toast glass-toast align-items-center border-0" role="alert" aria-live="assertive"
+            aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center" id="toastMessage">
                     <!-- Message -->
                 </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
             </div>
         </div>
     </div>
@@ -169,4 +181,5 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/js/app.js"></script>
 </body>
+
 </html>
